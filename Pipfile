@@ -1,0 +1,20 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+#black = "==19.3b0" #needs python 3.7
+flake8 = "*"
+isort = "*"
+mypy = "*"
+pycodestyle = "*"
+pylint = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-xdist = "*"
+
+[packages]
+
+[requires]
+python_version = "3"

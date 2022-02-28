@@ -1,0 +1,20 @@
+image: python:3.7
+
+pipelines:
+  branches:
+    master:
+      - step:
+          name: Build pippy
+          caches:
+            - pip
+          script:
+            - sed -i "8c\\VERSION = 0.${BITBUCKET_BUILD_NUMBER}" setup.py
+            - git add setup.py
+            - git commit -m "[skip ci] Updating version in setup.py [automated]"
+            - git push
+            - python -m pip install --upgrade pip 
+            - pip install --upgrade pip
+            - pip install pipenv
+            - pipenv install --deploy --system
+            - make
+            - make deploy
