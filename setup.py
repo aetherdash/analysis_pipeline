@@ -5,7 +5,7 @@ NAME = "aether-analysis"
 DESCRIPTION='Utilities for the Analysis Pipeline'
 LICENSE='Aether Biomachines Private repo'
 REQUIRED = []
-VERSION = 0.2
+VERSION = 0.1
 
 setup(
     name=NAME,
