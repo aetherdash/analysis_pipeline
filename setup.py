@@ -1,8 +1,8 @@
 from setuptools import find_packages, setup
 
 
-NAME = "aether-analytics-utils"
-DESCRIPTION='Utilities for interfacing with analytics database'
+NAME = "aether-analysis"
+DESCRIPTION='Utilities for the Analysis Pipeline'
 LICENSE='Aether Biomachines Private repo'
 REQUIRED = []
 VERSION = 0.2
