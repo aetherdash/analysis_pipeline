@@ -8,16 +8,14 @@ from collections import OrderedDict
 from datetime import datetime
 import matplotlib.pyplot as plt
 
-from analytics_utils.analytics_utils.table_properties import *
-from analytics_utils.analytics_utils.sql_utils import get_metric_filter_str
-from analytics_utils.analytics_utils.ttest import get_peak_vals, get_ttests
-from analytics_utils.analytics_utils.analysis_utils import get_ctrl_vals, get_lcms_qc_derivedmetrics_checks, calculate_conversion_enantioselectivity_C18, calculate_conversion_enantioselectivity_chiral, calculate_stats_for_array, calculate_stats_for_dataframe, get_unique_variants_in_dataframe
-from analytics_utils.analytics_utils.db_interface import DatabaseInterface
-from analytics_utils.analytics_utils.s3_interface import download_from_s3, upload_to_s3, s3_imgupload, s3_imgdownload, s3_df2csv, s3_csv2df
-# from analytics_utils.analytics_utils.slack_interface import post_slack_message, SlackMessageConstants
-from analytics_utils.analytics_utils.visualization_utils import generate_plots, df2array_dict
-from analytics_utils.analytics_utils.lims_utils import lims_post_matplotlib_img
-from analytics_utils.analytics_utils.visualization_utils import plot_scatter_combined_metrics, plot_histogram_combined_metrics, plot_boxplot
+from analytics_utils.database_access.table_properties import *
+from analytics_utils.database_access.sql_utils import get_metric_filter_str
+from analytics_utils.database_access.db_interface import DatabaseInterface
+from analytics_utils.database_access.s3_interface import download_from_s3, upload_to_s3, s3_imgupload, s3_imgdownload, s3_df2csv, s3_csv2df
+from analytics_utils.maldi_processing.ttest import get_peak_vals, get_ttests
+from analytics_utils.analysis_tools.analysis_utils import get_ctrl_vals, get_lcms_qc_derivedmetrics_checks, calculate_conversion_enantioselectivity_C18, calculate_conversion_enantioselectivity_chiral, calculate_stats_for_array, calculate_stats_for_dataframe, get_unique_variants_in_dataframe
+from analytics_utils.visualization_tools.visualization_utils import generate_plots, df2array_dict, plot_scatter_combined_metrics, plot_histogram_combined_metrics, plot_boxplot
+from analytics_utils.lims_tools.lims_utils import lims_post_matplotlib_img
 
 # Analytics pipeline classes
 from .lcms_C18_analytics import LcmsC18Analytics
@@ -68,8 +66,11 @@ class AnalysisPipeline:
             'prod(+)C18_vs_prod(-)C18':(['measured_nonbinary_score_(-)','measured_nonbinary_score_(+)'], ['prod_conc_(-)_C18', 'prod_conc_(+)_C18']),
             'EE_vs_Conversion':(['measured_conversion_(r)','measured_enantiomeric_excess_(+over-)'], ['RacemicConversion', 'ChiralEE']),
         }
-        self.stats = ['median','mean','max', 'min','cv','std','iqr','iqr_norm','range', 'range_norm']
-        self.suffix_list = [f'_{stat}_{ctrl_type}' for ctrl_type in [self.neg_ctrltype, 'POS'] for stat in ['median','mean','cv','std','iqr']] + \
+        # self.stats = ['median','mean','max', 'min','cv','std','iqr','iqr_norm','range', 'range_norm']
+        # self.suffix_list = [f'_{stat}_{ctrl_type}' for ctrl_type in [self.neg_ctrltype, 'POS'] for stat in ['median','mean','cv','std','iqr']] + \
+        # ['_max_FIOP', '_median_FIOP'] + [f'_{stat}' for stat in self.stats+['nonhitrate']]
+        self.stats = ['median','mean','max', 'cv','std',]
+        self.suffix_list = [f'_{stat}_{ctrl_type}' for ctrl_type in [self.neg_ctrltype, 'POS'] for stat in ['median','mean','cv','std']] + \
         ['_max_FIOP', '_median_FIOP'] + [f'_{stat}' for stat in self.stats+['nonhitrate']]
         self.suffix_list_to_display = ['_max_FIOP', '_median_FIOP'] + [f'_{stat}' for stat in ['median','mean','cv','nonhitrate']]
         self.sort_by = sort_by
@@ -787,14 +788,17 @@ class AnalysisPipeline:
             metric, stat = sort_by[0], sort_by[1]
             stats_table = pd.concat([stats_table.iloc[:3], stats_table.iloc[3:].sort_values(f'{metric}_{stat}', ascending=False).reset_index(drop=True)])
         
+        # columns to display that are in table
+        cols_to_display = [c for c in cols_to_display if c in stats_table]
+        
         if display_table and not self.get_dashboard_panel:
             pd.set_option('display.float_format', '{:.3f}'.format)
-            display(stats_table)
+            display(stats_table[cols_to_display])
             
         # save table to S3
         csv_fname = f'{groupbyname}_METRICS{self.fname_suffix}{table_suffix}'
         csv_header = f'Table of metric statistics (grouped by {groupbyname})'
-        self.save_content_to_s3(csv_fname, stats_table, file_format='csv', content_header=csv_header, content_type='dataframe', cols_to_display=[c for c in cols_to_display if c in stats_table])
+        self.save_content_to_s3(csv_fname, stats_table, file_format='csv', content_header=csv_header, content_type='dataframe', cols_to_display=cols_to_display)
 
         return stats_table
     

@@ -10,12 +10,12 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import cm
 
-from analytics_utils.analytics_utils.table_properties import *
-from analytics_utils.analytics_utils.analysis_utils import get_ctrl_vals, get_lcms_qc_derivedmetrics_checks, calculate_conversion_enantioselectivity_C18, calculate_stats_for_array, calculate_stats_for_dataframe, get_unique_variants_in_dataframe
-from analytics_utils.analytics_utils.visualization_utils import generate_plots, df2array_dict, plot_boxplot
-from analytics_utils.analytics_utils.db_interface import DatabaseInterface
-from analytics_utils.analytics_utils.s3_interface import download_from_s3, upload_to_s3, s3_imgupload, s3_df2csv
-from analytics_utils.analytics_utils.lims_utils import lims_post_matplotlib_img
+from analytics_utils.database_access.table_properties import *
+from analytics_utils.database_access.db_interface import DatabaseInterface
+from analytics_utils.database_access.s3_interface import download_from_s3, upload_to_s3, s3_imgupload, s3_df2csv
+from analytics_utils.analysis_tools.analysis_utils import get_ctrl_vals, get_lcms_qc_derivedmetrics_checks, calculate_conversion_enantioselectivity_C18, calculate_stats_for_array, calculate_stats_for_dataframe, get_unique_variants_in_dataframe
+from analytics_utils.visualization_tools.visualization_utils import generate_plots, df2array_dict, plot_boxplot
+from analytics_utils.lims_tools.lims_utils import lims_post_matplotlib_img
         
 class LcmsChiralAnalytics:
     
@@ -105,7 +105,7 @@ class LcmsChiralAnalytics:
             self.metricsetname = metricsetname
 
         ## calculate metrics by metricset ##
-        cols_to_get = ['ctrl_type', 'mutations'] + [g for g in groupby if g not in ['ctrl_type', 'mutations']] + metricset
+        cols_to_get = ['ctrl_type', 'enzyme_barcode'] + [g for g in groupby if g not in ['ctrl_type', 'enzyme_barcode']] + metricset
         df.loc[:, metricset] = df[metricset].fillna(value=np.nan)
         df_exp = df.loc[df[filter_expctrl[0]].isin(filter_expctrl[1]), cols_to_get].copy()
         df_pos = df.loc[df[filter_posctrl[0]].isin(filter_posctrl[1]), cols_to_get].copy()
@@ -157,7 +157,7 @@ class LcmsChiralAnalytics:
                 for g in groupby:
                     stats_bygrp.update({f'{g}': df_grp.iloc[0][g]})
                 # update number of unique variants
-                num_unique_variants, _, _ = get_unique_variants_in_dataframe(df_grp, colname='mutations', metric_prefix='', metric_suffix='')
+                num_unique_variants, _, _ = get_unique_variants_in_dataframe(df_grp, colname='enzyme_barcode', metric_prefix='', metric_suffix='')
                 stats_bygrp.update({f'n_var': num_unique_variants})
 
                 for i, metric in enumerate(metricset):

@@ -22,16 +22,16 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import AdaBoostRegressor
 from sklearn.neural_network import MLPRegressor
 
-from analytics_utils.analytics_utils.table_properties import *
-from analytics_utils.analytics_utils.sql_utils import get_metric_filter_str
-from analytics_utils.analytics_utils.ttest import get_peak_vals, get_ttests
-from analytics_utils.analytics_utils.dataset_creation_utils import get_source_plate_grp, update_source_grp, combine_rows_by_unique_enzyme, combine_maldi_lcms_data, get_ensemble_cv_results, get_ensemble_predictions
-from analytics_utils.analytics_utils.analysis_utils import get_ctrl_vals, get_lcms_qc_derivedmetrics_checks, calculate_conversion_enantioselectivity_C18, calculate_conversion_enantioselectivity_chiral
-from analytics_utils.analytics_utils.db_interface import DatabaseInterface
-from analytics_utils.analytics_utils.s3_interface import download_from_s3, upload_to_s3, s3_imgupload, s3_df2csv
-from analytics_utils.analytics_utils.slack_interface import post_slack_message, SlackMessageConstants
-from analytics_utils.analytics_utils.visualization_utils import generate_plots, df2array_dict
-from analytics_utils.analytics_utils.lims_utils import lims_post_matplotlib_img
+from analytics_utils.database_access.table_properties import *
+from analytics_utils.database_access.sql_utils import get_metric_filter_str
+from analytics_utils.database_access.db_interface import DatabaseInterface
+from analytics_utils.database_access.s3_interface import download_from_s3, upload_to_s3, s3_imgupload, s3_df2csv
+from analytics_utils.maldi_processing.ttest import get_peak_vals, get_ttests
+from analytics_utils.analysis_tools.dataset_creation_utils import get_source_plate_grp, update_source_grp, combine_rows_by_unique_enzyme, combine_maldi_lcms_data, get_ensemble_cv_results, get_ensemble_predictions
+from analytics_utils.analysis_tools.analysis_utils import get_ctrl_vals, get_lcms_qc_derivedmetrics_checks, calculate_conversion_enantioselectivity_C18, calculate_conversion_enantioselectivity_chiral
+from analytics_utils.utils.slack_interface import post_slack_message, SlackMessageConstants
+from analytics_utils.visualization_tools.visualization_utils import generate_plots, df2array_dict
+from analytics_utils.lims_tools.lims_utils import lims_post_matplotlib_img
 
         
 class DatasetCreation:

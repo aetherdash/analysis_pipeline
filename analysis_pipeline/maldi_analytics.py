@@ -10,13 +10,12 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import cm
 
-from analytics_utils.analytics_utils.table_properties import *
-from analytics_utils.analytics_utils.get_analytics_metrics import get_ctrl_vals, get_lcms_qc_derivedmetrics_checks
-from analytics_utils.analytics_utils.db_interface import DatabaseInterface
-from analytics_utils.analytics_utils.s3_interface import download_from_s3, upload_to_s3, s3_imgupload, s3_df2csv
-from analytics_utils.analytics_utils.visualization_utils import generate_plots, df2array_dict
-from analytics_utils.analytics_utils.lims_utils import lims_post_matplotlib_img
-from messages.detectionspipeline_producers import ML_producer
+from analytics_utils.database_access.table_properties import *
+from analytics_utils.database_access.db_interface import DatabaseInterface
+from analytics_utils.database_access.s3_interface import download_from_s3, upload_to_s3, s3_imgupload, s3_df2csv
+from analytics_utils.analysis_tools.analysis_utils import get_ctrl_vals, get_lcms_qc_derivedmetrics_checks
+from analytics_utils.visualization_tools.visualization_utils import generate_plots, df2array_dict
+from analytics_utils.lims_tools.lims_utils import lims_post_matplotlib_img
 
         
 class MaldiAnalytics: 
