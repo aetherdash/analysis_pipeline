@@ -1,5 +1,4 @@
 import os, sys
-sys.path.append('..')
 import pandas as pd
 import numpy as np
 import panel as pn
@@ -223,6 +222,7 @@ class AnalysisPipeline:
             } 
         
         df = df[[c for c in cols_to_get if c in df]].copy().rename(columns=cols_to_rename)
+        # print('Source plates:', df['source_plate_(r)'].tolist())
         if update_analytics_table:
             df = self.update_analytics_table_postgres(df, update_analytics_table=update_analytics_table)
         self.df = df
@@ -667,7 +667,7 @@ class AnalysisPipeline:
     
     
     
-    def get_activity_correlation_boxplots(self, df_reps, metric_list=['measured_nonbinary_score_(r)', 'pellet_OD', 'measured_nonbinary_sum_(r)'], metricname_list=['RacemicProduct', 'PelletOD', 'RacemicSum'], groupby=['mutations'], var_col_idx=0, var_list=None, fname_prefix='', table_suffix=''):
+    def get_activity_correlation_boxplots(self, df_reps, metric_list=['measured_nonbinary_score_(r)', 'pellet_OD', 'measured_nonbinary_sum_(r)'], metricname_list=['RacemicProduct', 'PelletOD', 'RacemicSum'], groupby=['mutations'], var_col_idx=0, var_list=None, fname_prefix='', table_suffix='', ylim=None):
         
         # get var_list to ORDER boxplot from dataframe order
         if var_list is None:
@@ -708,7 +708,7 @@ class AnalysisPipeline:
         for i, (metric, metricname) in enumerate(zip(metric_list, metricname_list)): 
             
             df_orderedgrps = pd.DataFrame(df_orderedgrps_dict[metric])
-            boxplot_list = plot_boxplot(df_orderedgrps, [metric], [metricname], groupby=None, fname_prefix=fname_prefix, fname_suffix=f'_{"-".join(groupby)}', img_format='png', plate_barcode=None, s3_bucket=self.s3_bucket, s3_subfolder=self.s3_subfolder, save_plot_to_s3=False, save_plot_to_lims=False, show_n=True)
+            boxplot_list = plot_boxplot(df_orderedgrps, [metric], [metricname], groupby=None, fname_prefix=fname_prefix, fname_suffix=f'_{"-".join(groupby)}', img_format='png', plate_barcode=None, s3_bucket=self.s3_bucket, s3_subfolder=self.s3_subfolder, save_plot_to_s3=False, save_plot_to_lims=False, show_n=True, ylim=ylim)
             plot_list += boxplot_list
             
             # save plots to S3
@@ -817,7 +817,8 @@ class AnalysisPipeline:
         
         # update enzyme_analytics_table records in S3 by unique source address, source plate combinations
         if update_analytics_table:
-            source_plate_list = list(set(df['source_plate_(r)'].tolist()))
+            source_plate_list = [p for p in list(set(df['source_plate_(r)'])) if (p is not None and p != '')]
+            
             print('source_plate_(r) list:', source_plate_list)
             for source_plate in source_plate_list:
                 # get data relevant to source plate
