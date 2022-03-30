@@ -3,18 +3,29 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
+[[source]]
+name = "aether"
+url = "http://pypi.aetherbio.com/simple"
+verify_ssl = false
+
 [dev-packages]
-#black = "==19.3b0" #needs python 3.7
-flake8 = "*"
-isort = "*"
-mypy = "*"
-pycodestyle = "*"
 pylint = "*"
-pytest = "*"
-pytest-cov = "*"
-pytest-xdist = "*"
+pylint-django = "*"
+mypy = "*"
+hypothesis = "*"
+invoke = "*"
+pre-commit = "*"
+django-stubs = "*"
+typing-extensions = "*"
+django-silk = "*"
 
 [packages]
+django = "==3.2.9"
+graphene-django = "*"
+psycopg2 = "*"
+aether-federation = {version="*", index="aether"}
 
 [requires]
 python_version = "3"
+
+[scripts]
