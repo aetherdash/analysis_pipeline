@@ -119,7 +119,6 @@ class LcmsC18Analytics:
         df_neg = df.loc[df[filter_negctrl[0]].isin(filter_negctrl[1]), cols_to_get].copy()
         df_ctrl = pd.concat([df_pos, df_neg])
         df_ctrls_dict = {'pos':pd.DataFrame(columns=cols_to_get), self.neg_ctrltype: pd.DataFrame(columns=cols_to_get)}
- 
         # initialize containers
         stats_bymetricset_CTRL_GRP = {}
 
@@ -183,6 +182,7 @@ class LcmsC18Analytics:
                     # get pos ctrl metrics for calculating FIOP
                     if calc_FIOP_bygrp:
                         pos_median = stats_bymetricset_CTRL_GRP[grp][f'{metric}_median_POS']
+                        print(grp, pos_median)
                     else:
                         pos_median = stats_bymetricset_CTRL_ALL['pos'][f'{metric}_median']
 
