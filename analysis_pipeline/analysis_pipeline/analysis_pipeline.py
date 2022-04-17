@@ -65,13 +65,12 @@ class AnalysisPipeline:
             'prod(+)C18_vs_prod(-)C18':(['measured_nonbinary_score_(-)','measured_nonbinary_score_(+)'], ['prod_conc_(-)_C18', 'prod_conc_(+)_C18']),
             'EE_vs_Conversion':(['measured_conversion_(r)','measured_enantiomeric_excess_(+over-)'], ['RacemicConversion', 'ChiralEE']),
         }
-        # self.stats = ['median','mean','max', 'min','cv','std','iqr','iqr_norm','range', 'range_norm']
-        # self.suffix_list = [f'_{stat}_{ctrl_type}' for ctrl_type in [self.neg_ctrltype, 'POS'] for stat in ['median','mean','cv','std','iqr']] + \
-        # ['_max_FIOP', '_median_FIOP'] + [f'_{stat}' for stat in self.stats+['nonhitrate']]
-        self.stats = ['median','mean','max', 'cv','std',]
+        self.stats = ['median', 'mean','max', 'cv','std', 'nonhitrate']
+        self.stats_to_display = ['mean','cv','nonhitrate']
         self.suffix_list = [f'_{stat}_{ctrl_type}' for ctrl_type in [self.neg_ctrltype, 'POS'] for stat in ['median','mean','cv','std']] + \
-        ['_max_FIOP', '_median_FIOP'] + [f'_{stat}' for stat in self.stats+['nonhitrate']]
-        self.suffix_list_to_display = ['_max_FIOP', '_median_FIOP'] + [f'_{stat}' for stat in ['median','mean','cv','nonhitrate']]
+        ['_max_FIOP', '_median_FIOP'] + [f'_{stat}' for stat in self.stats]
+        self.suffix_list_to_display = [f'_{stat}_{ctrl_type}' for ctrl_type in [self.neg_ctrltype, 'POS'] for stat in self.stats_to_display] + \
+        ['_max_FIOP', '_median_FIOP'] + [f'_{stat}' for stat in self.stats_to_display]
         self.sort_by = sort_by
         self.get_dashboard_panel = get_dashboard_panel
         self.dashboard_contents = []
@@ -615,6 +614,7 @@ class AnalysisPipeline:
         if exp_column not in groupby: 
             groupby = [exp_column] + groupby
         grp_list = sorted([l for l in list(set(df[exp_column])) if isinstance(l, str)])
+        print(groupby, grp_list)
         stats_table_dict, CTRL_stats = {}, {}
         CTRL_samples = {'pos':{}, self.neg_ctrltype:{}}
         for metric in self.metric_list:
