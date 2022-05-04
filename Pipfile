@@ -22,7 +22,6 @@ django-silk = "*"
 [packages]
 django = "==3.2.9"
 graphene-django = "*"
-psycopg2 = "*"
 aether-federation = {version="*", index="aether"}
 
 [requires]
